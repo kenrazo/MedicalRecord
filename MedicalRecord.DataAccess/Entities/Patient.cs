@@ -13,6 +13,7 @@ namespace MedicalRecord.DataAccess.Entities
         public string Firstname { get; set; }
         public string Lastname { get; set; }
         public int Gender { get; set; }
+        public int PaymentTypeId { get; set; }
 
     }
 }

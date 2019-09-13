@@ -14,5 +14,6 @@ namespace MedicalRecord.Common.Dto
     //    [Required]
         [MaxLength(20)]
         public string Lastname { get; set; }
+      //  public string PaymentType { get; set; }
     }
 }

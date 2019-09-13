@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using MedicalRecord.Business.Factories;
 using MedicalRecord.Common;
 using MedicalRecord.Common.Dto;
 using MedicalRecord.DataAccess;
@@ -14,10 +15,12 @@ namespace MedicalRecord.Business
     {
         private IDbContext _dbContext;
         private readonly IMapper _mapper;
-        public PatientBusiness(IDbContext dbContext, IMapper mapper)
+        private readonly IPaymentTypeFactory _paymentTypeFactory;
+        public PatientBusiness(IDbContext dbContext, IMapper mapper, IPaymentTypeFactory paymentTypeFactory)
         {
             _dbContext = dbContext;
             _mapper = mapper;
+            _paymentTypeFactory = paymentTypeFactory;
         }
 
         public async Task<IEnumerable<PatientsDto>> Get()
@@ -25,6 +28,7 @@ namespace MedicalRecord.Business
             var patients = await _dbContext.PatientRepository.All();
             //  var result = new List<PatientsDto>();
             var result = _mapper.Map<IEnumerable<PatientsDto>>(patients);
+            
 
             return result;
         }
@@ -32,10 +36,15 @@ namespace MedicalRecord.Business
         public async Task<PatientsDto> GetById(int id)
         {
             var patient = await _dbContext.PatientRepository.ById(id);
-
             var result = _mapper.Map<PatientsDto>(patient);
-
+            var paymentType = GetPaymentType(patient);
             return result;
+        }
+
+        private string GetPaymentType(Patient patient)
+        {
+            var paymentFactory = _paymentTypeFactory.GetPaymentType(patient.PaymentTypeId);
+            return  paymentFactory.PaymentType();
         }
 
         public async Task<Result> Insert(PatientsDto patient)
